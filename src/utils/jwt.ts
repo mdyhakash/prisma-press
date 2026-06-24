@@ -9,6 +9,15 @@ const createToken = (
   return token;
 };
 
+const verifyToken = (token: string, secret: string) => {
+  try {
+    const verfiedToken = jwt.verify(token, secret);
+    return verfiedToken;
+  } catch (error) {
+    throw new Error("Invalid signature");
+  }
+};
 export const jwtUtils = {
   createToken,
+  verifyToken,
 };
