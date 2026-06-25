@@ -12,9 +12,16 @@ const createToken = (
 const verifyToken = (token: string, secret: string) => {
   try {
     const verfiedToken = jwt.verify(token, secret);
-    return verfiedToken;
-  } catch (error) {
-    throw new Error("Invalid signature");
+    return {
+      success: true,
+      data: verfiedToken,
+    };
+  } catch (error: any) {
+    console.log("Token verification failed:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
   }
 };
 export const jwtUtils = {

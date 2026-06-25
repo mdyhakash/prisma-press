@@ -24,16 +24,9 @@ const registerUser = catchAsync(
 
 const getMyProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { accessToken } = req.cookies;
-    const verifiedToken = jwtUtils.verifyToken(
-      accessToken,
-      config.jwt_access_secret,
+    const profile = await userService.getMyProfileFromDB(
+      req.user?.id as string,
     );
-
-    if (typeof verifiedToken === "string") {
-      throw new Error(verifiedToken);
-    }
-    const profile = await userService.getMyProfileFromDB(verifiedToken.id);
 
     sendResponse(res, {
       success: true,
