@@ -1,7 +1,8 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
+import { RegisterUserPayload } from "./user.interface";
 
-const registerUserIntoDB = async (payload: any) => {
+const registerUserIntoDB = async (payload: RegisterUserPayload) => {
   const { name, email, password, profilePhoto } = payload;
   const isUserExist = await prisma.user.findUnique({
     where: { email },
@@ -54,7 +55,33 @@ const getMyProfileFromDB = async (userId: string) => {
   });
   return user;
 };
+
+const updateUserInDB = async (userId: string, payload: RegisterUserPayload) => {
+  const { name, email, profilePhoto, bio } = payload;
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      name,
+      email,
+      profile: {
+        update: {
+          profilePhoto,
+          bio,
+        },
+      },
+    },
+    omit: {
+      password: true,
+    },
+    include: {
+      profile: true,
+    },
+  });
+
+  return user;
+};
 export const userService = {
   registerUserIntoDB,
   getMyProfileFromDB,
+  updateUserInDB,
 };
