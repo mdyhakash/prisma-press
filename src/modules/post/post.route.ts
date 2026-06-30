@@ -10,5 +10,10 @@ router.post(
   auth(Role.User, Role.ADMIN, Role.AUTHOR),
   postController.createPost,
 );
+router.patch(
+  "/:postId",
+  auth(Role.User, Role.ADMIN, Role.AUTHOR),
+  postController.updatePost,
+);
 
 export const postRoutes = router;

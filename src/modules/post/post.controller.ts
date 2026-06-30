@@ -21,7 +21,33 @@ const createPost = catchAsync(
 const getAllPost = async () => {};
 const getMyPost = async () => {};
 const getPostByID = async () => {};
-const updatePost = async () => {};
+const updatePost = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const authorId = req.user?.id;
+    const isAdmin = req.user?.role === "ADMIN";
+
+    const postId = req.params.postId;
+    const payload = req.body;
+
+    if (!postId) {
+      throw new Error("post id required in params");
+    }
+
+    const result = await postService.updatePost(
+      postId as string,
+      payload,
+      authorId as string,
+      isAdmin as boolean,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Post updated successfully",
+      data: result,
+    });
+  },
+);
 const deletePost = async () => {};
 const getPostsStats = async () => {};
 

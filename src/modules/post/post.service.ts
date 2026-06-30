@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/prisma";
-import { IPost } from "./post.interface";
+import { ICreatePost, IUpdatePost } from "./post.interface";
 
-const createPost = async (payload: IPost, userId: string) => {
+const createPost = async (payload: ICreatePost, userId: string) => {
   const result = await prisma.post.create({
     data: {
       ...payload,
@@ -13,7 +13,38 @@ const createPost = async (payload: IPost, userId: string) => {
 const getAllPost = async () => {};
 const getMyPost = async () => {};
 const getPostByID = async () => {};
-const updatePost = async () => {};
+const updatePost = async (
+  postId: string,
+  payload: IUpdatePost,
+  authorId: string,
+  isAdmin: boolean,
+) => {
+  const post = await prisma.post.findUniqueOrThrow({
+    where: {
+      id: postId,
+    },
+  });
+
+  if (!isAdmin && post.authorId !== authorId) {
+    throw new Error("you're not the owner of this post");
+  }
+
+  const result = await prisma.post.update({
+    where: {
+      id: postId,
+    },
+    data: payload,
+    include: {
+      author: {
+        omit: {
+          password: true,
+        },
+      },
+      comments: true,
+    },
+  });
+  return result;
+};
 const deletePost = async () => {};
 const getPostsStats = async () => {};
 
