@@ -48,7 +48,25 @@ const updatePost = catchAsync(
     });
   },
 );
-const deletePost = async () => {};
+const deletePost = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const authorId = req.user?.id;
+    const isAdmin = req.user?.role === "ADMIN";
+    const postId = req.params.postId;
+
+    const result = await postService.deletePost(
+      postId as string,
+      authorId as string,
+      isAdmin as boolean,
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Post deleted",
+      data: result,
+    });
+  },
+);
 const getPostsStats = async () => {};
 
 export const postController = {
