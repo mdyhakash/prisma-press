@@ -18,8 +18,32 @@ const createPost = catchAsync(
     });
   },
 );
-const getAllPost = async () => {};
-const getMyPost = async () => {};
+const getAllPost = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await postService.getAllPost();
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Post fetched successfully",
+      data: result,
+    });
+  },
+);
+const getMyPost = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const authorId = req.user?.id;
+
+    const result = await postService.getMyPost(authorId as string);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "My post retrive successfully",
+      data: result,
+    });
+  },
+);
 const getPostByID = async () => {};
 const updatePost = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

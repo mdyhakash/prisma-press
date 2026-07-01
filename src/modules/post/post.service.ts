@@ -1,3 +1,4 @@
+import { auth } from "./../../middlewares/auth";
 import { prisma } from "../../lib/prisma";
 import { ICreatePost, IUpdatePost } from "./post.interface";
 
@@ -10,8 +11,34 @@ const createPost = async (payload: ICreatePost, userId: string) => {
   });
   return result;
 };
-const getAllPost = async () => {};
-const getMyPost = async () => {};
+const getAllPost = async () => {
+  const posts = await prisma.post.findMany({
+    include: {
+      author: {
+        omit: {
+          password: true,
+        },
+      },
+      comments: true,
+    },
+  });
+  return posts;
+};
+const getMyPost = async (authorId: string) => {
+  const result = await prisma.post.findMany({
+    where: { authorId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      comments: true,
+      author: {
+        omit: {
+          password: true,
+        },
+      },
+    },
+  });
+  return result;
+};
 const getPostByID = async () => {};
 const updatePost = async (
   postId: string,

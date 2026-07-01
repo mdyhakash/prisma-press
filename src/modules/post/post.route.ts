@@ -10,6 +10,13 @@ router.post(
   auth(Role.User, Role.ADMIN, Role.AUTHOR),
   postController.createPost,
 );
+router.get("/", postController.getAllPost);
+router.get(
+  "/my-posts",
+  auth(Role.ADMIN, Role.AUTHOR, Role.User),
+  postController.getMyPost,
+);
+
 router.patch(
   "/:postId",
   auth(Role.User, Role.ADMIN, Role.AUTHOR),
