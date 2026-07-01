@@ -1,6 +1,7 @@
 import { auth } from "./../../middlewares/auth";
 import { prisma } from "../../lib/prisma";
 import { ICreatePost, IUpdatePost } from "./post.interface";
+import { CommentStatus } from "../../../generated/prisma/enums";
 
 const createPost = async (payload: ICreatePost, userId: string) => {
   const result = await prisma.post.create({
@@ -45,27 +46,43 @@ const getMyPost = async (authorId: string) => {
   return result;
 };
 const getPostByID = async (postId: string) => {
-  const post = await prisma.post.findFirstOrThrow({
-    where: { id: postId },
-  });
-
-  const updatedPost = await prisma.post.update({
-    where: { id: postId },
-    data: {
-      views: {
-        increment: 1,
-      },
-    },
-    include: {
-      author: {
-        omit: {
-          password: true,
+  const transactionResult = await prisma.$transaction(async (tx) => {
+    await tx.post.update({
+      where: { id: postId },
+      data: {
+        views: {
+          increment: 1,
         },
       },
-      comments: true,
-    },
+    });
+    // throw new Error("fake error");
+    const post = await tx.post.findFirstOrThrow({
+      where: { id: postId },
+      include: {
+        author: {
+          omit: {
+            password: true,
+          },
+        },
+        comments: {
+          where: {
+            status: CommentStatus.APPROVED,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
+    });
+    return post;
   });
-  return updatedPost;
+
+  return transactionResult;
 };
 const updatePost = async (
   postId: string,
