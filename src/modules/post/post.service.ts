@@ -35,11 +35,38 @@ const getMyPost = async (authorId: string) => {
           password: true,
         },
       },
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
     },
   });
   return result;
 };
-const getPostByID = async () => {};
+const getPostByID = async (postId: string) => {
+  const post = await prisma.post.findFirstOrThrow({
+    where: { id: postId },
+  });
+
+  const updatedPost = await prisma.post.update({
+    where: { id: postId },
+    data: {
+      views: {
+        increment: 1,
+      },
+    },
+    include: {
+      author: {
+        omit: {
+          password: true,
+        },
+      },
+      comments: true,
+    },
+  });
+  return updatedPost;
+};
 const updatePost = async (
   postId: string,
   payload: IUpdatePost,

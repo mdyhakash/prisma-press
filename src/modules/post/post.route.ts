@@ -16,7 +16,11 @@ router.get(
   auth(Role.ADMIN, Role.AUTHOR, Role.User),
   postController.getMyPost,
 );
-
+router.get(
+  "/:postId",
+  auth(Role.ADMIN, Role.AUTHOR, Role.User),
+  postController.getPostByID,
+);
 router.patch(
   "/:postId",
   auth(Role.User, Role.ADMIN, Role.AUTHOR),
