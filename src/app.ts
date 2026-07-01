@@ -5,6 +5,7 @@ import config from "./config";
 import { userRoutes } from "./modules/user/user.route";
 import { authRoutes } from "./modules/auth/auth.route";
 import { postRoutes } from "./modules/post/post.route";
+import { CommentRoutes } from "./modules/comment/comment.route";
 
 const app = express();
 app.use(
@@ -25,4 +26,5 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/comments", CommentRoutes);
 export default app;
