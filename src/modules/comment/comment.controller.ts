@@ -22,8 +22,33 @@ const createComment = catchAsync(
     });
   },
 );
-const getCommentByAuthorId = async () => {};
-const getCommentByCommentId = async () => {};
+const getCommentByAuthorId = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const authorId = req.params.id;
+    const result = await CommentService.getCommentByAuthorId(
+      authorId as string,
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "comment retrived successsfully",
+      data: result,
+    });
+  },
+);
+const getCommentByPostId = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const postId = req.params.postId;
+
+    const result = await CommentService.getCommentByPostId(postId as string);
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "comment retrieved successsfully",
+      data: result,
+    });
+  },
+);
 const updateComment = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
@@ -59,12 +84,27 @@ const deleteComment = catchAsync(
     });
   },
 );
-const moderateComment = async () => {};
+const moderateComment = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const commentId = req.params.commentId;
+    const payload = req.body;
+    const result = await CommentService.moderateComment(
+      commentId as string,
+      payload,
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "comment moderated successsfully",
+      data: result,
+    });
+  },
+);
 
 export const commnetController = {
   createComment,
   getCommentByAuthorId,
-  getCommentByCommentId,
+  getCommentByPostId,
   updateComment,
   deleteComment,
   moderateComment,

@@ -11,7 +11,7 @@ router.post(
   commnetController.createComment,
 );
 router.get("/author/:authorId", commnetController.getCommentByAuthorId);
-router.get("/:commentId", commnetController.getCommentByCommentId);
+router.get("/:postId", commnetController.getCommentByPostId);
 router.patch(
   "/:commentId",
   auth(Role.ADMIN, Role.AUTHOR, Role.User),
@@ -23,7 +23,7 @@ router.delete(
   commnetController.deleteComment,
 );
 router.put(
-  "/:commnetId/moderate",
+  "/:commentId/moderate",
   auth(Role.ADMIN),
   commnetController.moderateComment,
 );
